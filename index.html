@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Fontawesome CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+      integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+
+    <!-- OpenLayers CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/ol@v10.0.0/ol.css"
+    />
+
+    <!-- sweetalert2 CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.4/dist/sweetalert2.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Datatables CSS -->
+    <link
+      href="https://cdn.datatables.net/2.1.4/css/dataTables.dataTables.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Includes all JS & CSS for the JavaScript Data Grid -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/ag-grid-community/styles/ag-grid.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/ag-grid-community/styles/ag-theme-alpine.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.min.js"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="src/assets/base.css" />
+    <link rel="stylesheet" href="src/assets/style.css" />
+    <title>MapTracking</title>
+  </head>
+  <body>
+    <div class="navigation-bar">
+      <div class="dropdown">
+        <div id="navigationBarToggle" class="dropdown-toggle">
+          <div id="menu-icon">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+          </div>
+        </div>
+
+        <ul class="dropdown-menu">
+          <li class="menu-item">
+            <button
+              type="button"
+              id="addFeatureBtn"
+              class="btn btn-md btn-secondary btn-icon"
+            >
+              <i class="fa-solid fa-plus"></i>
+            </button>
+          </li>
+
+          <li class="menu-item">
+            <button
+              type="button"
+              id="queryBtn"
+              class="btn btn-md btn-secondary btn-icon"
+            >
+              <i class="fa-solid fa-database"></i>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div id="map"></div>
+
+    <div id="myGrid" class="ag-theme-alpine"></div>
+
+    <div class="popup" id="mapFeaturePopup">
+      <div class="popup-header">
+        <span class="popup-title" id="popupTitle">Noktanın Adı</span>
+        <span class="close-btn">×</span>
+      </div>
+      <div class="popup-body">
+        <p>Koordinatlar:</p>
+        <p>X: <span id="popupX">123.45</span></p>
+        <p>Y: <span id="popupY">678.90</span></p>
+      </div>
+    </div>
+
+    <div class="toast" id="addFeatureToast">
+      <p class="toast-text">Select a location to add a new feature</p>
+    </div>
+
+    <div class="offcanvas offcanvas-start bg-white" id="featureFormOffcanvas">
+      <div class="offcanvas-header">
+        <h5 class="offcanvas-title text-center fs-4"></h5>
+      </div>
+      <div class="offcanvas-body"></div>
+    </div>
+
+    <!-- OpenLayers JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/ol@v10.0.0/dist/ol.js"></script>
+    <!-- sweetalert2 JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.4/dist/sweetalert2.all.min.js"></script>
+    <!-- Datatables JavaScript -->
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+      integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+
+    <script src="https://cdn.datatables.net/2.1.4/js/dataTables.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script src="./src//components/templates.js"></script>
+    <script src="./src/stores/feature.store.js"></script>
+    <script src="./src/helpers/dom.helper.js"></script>
+    <script src="./src/helpers/api.helper.js"></script>
+    <script src="./src/helpers/map.helper.js"></script>
+    <script src="./src/helpers/modal.helper.js"></script>
+    <script src="./src/models/feature.model.js"></script>
+    <script src="./src/services/api.service.js"></script>
+    <script src="./src/services/feature.service.js"></script>
+    <script src="./src/models/map.model.js"></script>
+    <script src="./src/main.js"></script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const dropdownList = document.querySelectorAll(".dropdown");
+
+        const addFeatureBtn = document.getElementById("addFeatureBtn");
+        const queryBtn = document.getElementById("queryBtn");
+
+        const popupList = document.querySelectorAll("popup");
+
+        dropdownList.forEach((dropdown) => {
+          const dropdownToggle = dropdown.querySelector(".dropdown-toggle");
+
+          dropdownToggle.addEventListener("click", () => {
+            dropdown.classList.toggle("show");
+            dropdownToggle.classList.toggle("active");
+
+            if (dropdownToggle.id === "navigationBarToggle") {
+              if (
+                !dropdownToggle.classList.contains("active") &&
+                addFeatureBtn.classList.contains("active")
+              ) {
+                resetAddMode();
+              }
+            }
+          });
+        });
+
+        popupList.forEach((popup) => {
+          const popupCloseBtn = popup.querySelector(".close-btn");
+          popupCloseBtn.addEventListener("click", () => {
+            popup.classList.remove("show");
+          });
+        });
+
+        addFeatureBtn.addEventListener("click", handleClickAddBtn);
+        queryBtn.addEventListener("click", openQueryPanel);
+      });
+    </script>
+  </body>
+</html>
