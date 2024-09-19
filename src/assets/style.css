@@ -21,10 +21,10 @@
   transition: 200ms;
 }
 .navigation-bar .dropdown.show {
-  height: 200px;
+  height: 300px;
 }
 
-.navigation-bar .dropdown-toggle {
+.navigation-bar .navigation-btn {
   width: 55px;
   height: 55px;
   background: var(--primary);

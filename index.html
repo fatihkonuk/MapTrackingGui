@@ -48,9 +48,18 @@
     <title>MapTracking</title>
   </head>
   <body>
-    <div class="navigation-bar">
+    <div class="navigation-bar flex items-start">
+      <div style="padding: 10px 0">
+        <button
+          type="button"
+          id="homeBtn"
+          class="btn btn-md btn-primary btn-icon navigation-btn"
+        >
+          <i class="fa-solid fa-home"></i>
+        </button>
+      </div>
       <div class="dropdown">
-        <div id="navigationBarToggle" class="dropdown-toggle">
+        <div id="navigationBarToggle" class="dropdown-toggle navigation-btn">
           <div id="menu-icon">
             <div class="bar"></div>
             <div class="bar"></div>
@@ -76,6 +85,26 @@
               class="btn btn-md btn-secondary btn-icon"
             >
               <i class="fa-solid fa-database"></i>
+            </button>
+          </li>
+
+          <li class="menu-item">
+            <button
+              type="button"
+              id="rotateLeftBtn"
+              class="btn btn-md btn-secondary btn-icon"
+            >
+              <i class="fa-solid fa-rotate-left"></i>
+            </button>
+          </li>
+
+          <li class="menu-item">
+            <button
+              type="button"
+              id="rotateRightBtn"
+              class="btn btn-md btn-secondary btn-icon"
+            >
+              <i class="fa-solid fa-rotate-right"></i>
             </button>
           </li>
         </ul>
@@ -140,8 +169,11 @@
       document.addEventListener("DOMContentLoaded", () => {
         const dropdownList = document.querySelectorAll(".dropdown");
 
+        const homeBtn = document.getElementById("homeBtn");
         const addFeatureBtn = document.getElementById("addFeatureBtn");
         const queryBtn = document.getElementById("queryBtn");
+        const rotateLeftBtn = document.getElementById("rotateLeftBtn");
+        const rotateRightBtn = document.getElementById("rotateRightBtn");
 
         const popupList = document.querySelectorAll("popup");
 
@@ -170,8 +202,11 @@
           });
         });
 
+        homeBtn.addEventListener("click", handleClickHomeBtn);
         addFeatureBtn.addEventListener("click", handleClickAddBtn);
         queryBtn.addEventListener("click", openQueryPanel);
+        rotateLeftBtn.addEventListener("click", handleClickRotateLeftBtn);
+        rotateRightBtn.addEventListener("click", handleClickRotateRightBtn);
       });
     </script>
   </body>

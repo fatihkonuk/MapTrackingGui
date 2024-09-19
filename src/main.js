@@ -173,8 +173,25 @@ function openQueryPanel() {
   }
 }
 
+function handleClickHomeBtn() {
+  MapHelper.zoomTo({
+    mapModel: myMap,
+    coords: [35, 39],
+    zoom: 6,
+    duration: 2000,
+  });
+}
+
 function handleClickAddBtn() {
   myMap.addMode ? resetAddMode() : ModalHelper.openFeatureTypeSelector();
+}
+
+function handleClickRotateLeftBtn() {
+  MapHelper.rotateLeft(myMap)
+}
+
+function handleClickRotateRightBtn() {
+  MapHelper.rotateRight(myMap)
 }
 
 function activateAddMode(drawType) {

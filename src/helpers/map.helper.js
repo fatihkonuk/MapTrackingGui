@@ -27,6 +27,15 @@ class MapHelper {
           }),
         })
       );
+    } else {
+      olFeature.setStyle(
+        new ol.style.Style({
+          stroke: new ol.style.Stroke({
+            color: "blue",
+            width: 2,
+          }),
+        })
+      );
     }
 
     olFeature.setProperties({ data: feature });
@@ -144,7 +153,7 @@ class MapHelper {
       olFeature.setStyle(
         new ol.style.Style({
           stroke: new ol.style.Stroke({
-            color: "rgba(0, 0, 0, 0.2)",
+            color: "rgba(0, 0, 0, 0.5)",
             width: 1,
           }),
           fill: new ol.style.Fill({
@@ -208,8 +217,17 @@ class MapHelper {
         <span class="close-btn">×</span>
       </div>
       <div class="popup-body">
-        <p>WKT: <span id="popupX">${feature.wkt}</span></p>
-        <td>
+        <div class="mb-3">
+          <p><b>Name:</b></p>
+          <p id="popupX">${feature.name}</p>
+        </div>
+        <div class="mb-3">
+          <p><b>WKT:</b></p>
+          <p id="popupX">${feature.wkt}</p>
+        </div>
+        
+        
+        <div>
           <button type="button" class="btn btn-warning point-update-btn" onclick="handleClickUpdateBtn(
             ${feature.id}
           )">
@@ -220,7 +238,7 @@ class MapHelper {
           )">
             <i class="fa-solid fa-trash-can"></i>
           </button>
-          </td>
+          </div>
       </div>
     `;
   }
@@ -246,6 +264,14 @@ class MapHelper {
     }
   }
 
+  static zoomTo({ mapModel, coords, zoom, duration }) {
+    mapModel.map.getView().animate({
+      center: ol.proj.fromLonLat(coords),
+      zoom: zoom,
+      duration: duration,
+    });
+  }
+
   static zoomToFeature({ mapModel, feature, duration, cb }) {
     this.disposePopover(mapModel);
     const extent = feature.getGeometry().getExtent();
@@ -264,5 +290,17 @@ class MapHelper {
       },
       cb
     );
+  }
+
+  static rotateLeft(mapModel) {
+    mapModel.map.getView().animate({
+      rotation: mapModel.map.getView().getRotation() + Math.PI / 2,
+    });
+  }
+
+  static rotateRight(mapModel) {
+    mapModel.map.getView().animate({
+      rotation: mapModel.map.getView().getRotation() - Math.PI / 2,
+    });
   }
 }
